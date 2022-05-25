@@ -1,0 +1,26 @@
+{
+    "model_name_or_path": "bert-base-uncased", 用户在创建*任务*时指定，default为"bert-base-uncased"
+    "ln_type": "post", 用户在创建*模型*时指定，default为post，可选(post, pre)
+    "freeze": "", 用户在创建*模型*时指定，default为""，可选'embeddings', 'encoder', 'all', "1,2,..."
+    "cls_type": "fc", 用户在创建*模型*时指定，default为fc，有cnn, lstm, fc
+    "pooler_type": "cls", 用户在创建*模型*时指定，default为cls
+    "activation": "gelu", 用户在创建*模型*时指定，default为gelu,
+    "train_file": "path / to / train set", 必须有
+    "valid_file": "path / to / valid set", 可以没有，如果这里没有那么do_eval=false
+    "test_file": "path / to / test set", 可以没有
+    "max_seq_length": 256, 用户在创建*任务*时给定，default为256
+    "pad_to_max_length": false,
+    "output_dir": "path / to / output", 后端指定，output存放地址，会包含训练后的模型参数和log
+    "overwrite_output_dir": true,
+    "num_train_epochs": 10, 用户在创建*任务*时给定，default为10
+    "per_device_train_batch_size": 128, 用户在创建*任务*时给定，default为128
+    "learning_rate": 5e-5, 用户在创建*任务*时给定，default为5e-5
+    "evaluation_strategy": "epoch",
+    "load_best_model_at_end": true,
+    "do_train": true,
+    "do_eval": true,
+    "fp16": true,
+    "report_to": "wandb",
+    "run_name": "任务ID" 后端指定
+}
+
