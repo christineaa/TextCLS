@@ -12,9 +12,11 @@ def clean_symbols(content):
 class BertDataset(Dataset):
     """数据集的创建"""
 
-    def __init__(self, path, tokenizer, config, content_name, label_name=None):
+    def __init__(self, path, tokenizer, config):
         super(BertDataset, self).__init__()
         self.data = pd.read_csv(path, encoding='utf_8_sig')
+        content_name = config.src_column1
+        label_name = config.tgt_column
         self.data["sentence"] = self.data[content_name]
         self.data["cut_sentence"] = self.data['sentence'].apply(clean_symbols)
         # 标签映射到id

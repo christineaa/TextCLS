@@ -9,6 +9,8 @@
     "train_file": "data/train.csv",
     "valid_file": "data/valid.csv",
     "test_file": "data/test.csv",
+    "src_column1": "content",
+    "tgt_column": "label",
     "max_seq_length": 256,
     "pad_to_max_length": false,
     "output_dir": "output",

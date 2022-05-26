@@ -161,6 +161,18 @@ class DataTrainingArguments:
         default=None,
         metadata={"help": "The testing data file (.csv)."}
     )
+    src_column1: Optional[str] = field(
+        default=None,
+        metadata={"help": "which column to be input1"}
+    )
+    src_column2: Optional[str] = field(
+        default=None,
+        metadata={"help": "which column to be input2"}
+    )
+    tgt_column: Optional[str] = field(
+        default=None,
+        metadata={"help": "which column to be label"}
+    )
     max_seq_length: Optional[int] = field(
         default=32,
         metadata={
@@ -235,6 +247,7 @@ class OurTrainingArguments(TrainingArguments):
 
 
 def bert_train(config_path):
+    config_path = "args.json"
     parser = HfArgumentParser((ModelArguments, DataTrainingArguments, TrainingArguments))
     model_args, data_args, training_args = parser.parse_json_file(json_file=config_path)
     # set log
@@ -280,9 +293,9 @@ def bert_train(config_path):
         use_fast=False,
     )
 
-    train_dataset = BertDataset(data_args.train_file, tokenizer, data_args, 'content', 'label')
-    dev_dataset = BertDataset(data_args.valid_file, tokenizer, data_args, 'content', 'label')
-    test_dataset = BertDataset(data_args.test_file, tokenizer, data_args, 'content', 'label')
+    train_dataset = BertDataset(data_args.train_file, tokenizer, data_args)
+    dev_dataset = BertDataset(data_args.valid_file, tokenizer, data_args)
+    test_dataset = BertDataset(data_args.test_file, tokenizer, data_args)
     config.label2id = train_dataset.label2id
     config.num_labels = train_dataset.num_labels
     config.id2label = {v: k for k, v in train_dataset.label2id.items()}
@@ -309,6 +322,7 @@ def bert_train(config_path):
         callbacks=[TensorBoardCallback],
         compute_metrics=compute_metrics
     )
+    trainer.remove_callback(transformers.trainer_callback.PrinterCallback)
     train_result = trainer.train()
     trainer.save_model(os.path.join(training_args.output_dir, "latest"))
     output_train_file = os.path.join(training_args.output_dir, "train_results.txt")
