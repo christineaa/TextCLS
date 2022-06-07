@@ -1,3 +1,4 @@
+import requests
 import ray
 from ray import serve
 from fastapi import FastAPI
@@ -8,6 +9,7 @@ from nlptrainer import bert_train, bert_predict
 
 class Item(BaseModel):
     config_path: str
+    task_id: str
 
 
 ray.init()
@@ -31,8 +33,11 @@ class NLPServer:
 
     @app.post("/train")
     def setup(self, item: Item):
-        bert_train(item.config_path)
-        # print(item.config_path)
+        try:
+            bert_train(item.config_path)
+        except Exception as e:
+            requests.post("http://127.0.0.1:8080/train", data={'task_id': item.task_id, 'status': repr(e)})
+        requests.post("http://127.0.0.1:8080/train", data={'task_id': item.task_id, 'status': 'finish'})
         return "success"
 
     @app.post("/predict")
