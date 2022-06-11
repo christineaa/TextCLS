@@ -41,8 +41,21 @@ class NLPServer:
         return "success"
 
     @app.post("/predict")
-    def setup(self, config_path: str):
-        bert_predict(config_path)
+    def setup(self, item: Item):
+        try:
+            bert_predict(item.config_path, is_infer=True)
+        except Exception as e:
+            requests.post("http://127.0.0.1:8080/predict", data={'task_id': item.task_id, 'status': repr(e)})
+        requests.post("http://127.0.0.1:8080/predict", data={'task_id': item.task_id, 'status': 'finish'})
+        return "success"
+
+    @app.post("/evaluate")
+    def setup(self, item: Item):
+        try:
+            bert_predict(item.config_path, is_infer=False)
+        except Exception as e:
+            requests.post("http://127.0.0.1:8080/evaluate", data={'task_id': item.task_id, 'status': repr(e)})
+        requests.post("http://127.0.0.1:8080/evaluate", data={'task_id': item.task_id, 'status': 'finish'})
         return "success"
 
 

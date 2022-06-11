@@ -20,13 +20,15 @@ class BertDataset(Dataset):
         self.data["sentence"] = self.data[content_name]
         self.data["cut_sentence"] = self.data['sentence'].apply(clean_symbols)
         # 标签映射到id
-        label2id = {label: i for i, label in enumerate(self.data[label_name].unique())}
-        self.data['category_id'] = self.data[label_name].apply(lambda x: x.strip()).map(label2id)
+        if label_name is not None:
+            label2id = {label: i for i, label in enumerate(self.data[label_name].unique())}
+            self.data['category_id'] = self.data[label_name].apply(lambda x: x.strip()).map(label2id)
+            self.num_labels = len(label2id)
+            self.label2id = label2id
+
         self.tokenizer = tokenizer
         self.max_seq_length = config.max_seq_length
         self.label_name = label_name
-        self.num_labels = len(label2id)
-        self.label2id = label2id
         self.pad_to_max_length = config.pad_to_max_length
 
     def __getitem__(self, i):
