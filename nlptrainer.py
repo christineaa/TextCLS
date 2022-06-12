@@ -428,7 +428,7 @@ def bert_predict(config_path, is_infer=True):
     eval_out = evaluate(model, test_dataloader, training_args.device, is_infer)
     if is_infer:
         pred_logits, pred_idx = eval_out
-        logits_file = os.path.join(training_args.output_dir, "predict_logits.json")
+        logits_file = os.path.join(training_args.output_dir, "predict_probs.json")
         pred_logits = pred_logits.tolist()
         logits = {i: logit for i, logit in enumerate(pred_logits)}
         json.dump(logits, open(logits_file, "w"), indent=2)
@@ -487,8 +487,8 @@ def evaluate(model, data_iter, device, is_infer=False):
                 labels = labels.data.cpu().numpy()
                 labels_all = np.append(labels_all, labels)
 
-            predic = torch.max(outputs.logits, 1)[1].cpu().numpy()
-            predict_all.extend(outputs.logits.cpu().numpy())
+            pred_probs = torch.softmax(outputs.logits, dim=-1)
+            predict_all.extend(pred_probs.cpu().numpy())
 
     predict_all = np.array(predict_all)
     predict_idx = np.argmax(predict_all, axis=-1)
