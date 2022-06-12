@@ -10,12 +10,27 @@ from transformers.models.bert.modeling_bert import (
     BertOutput,
     BertIntermediate
 )
-from transformers.modeling_outputs import (
-    BaseModelOutputWithPoolingAndCrossAttentions,
-)
+from transformers.modeling_outputs import BaseModelOutputWithPoolingAndCrossAttentions
+from transformers.activations import ACT2FN
 from transformers.modeling_utils import apply_chunking_to_forward
 
 from modified_bert import CustomizedBertAttention as BertAttention
+
+
+class BertIntermediate(nn.Module):
+    def __init__(self, config):
+        super().__init__()
+        self.dense = nn.Linear(config.hidden_size, config.intermediate_size)
+        if isinstance(config.hidden_act, str):
+            self.intermediate_act_fn = ACT2FN[config.hidden_act]
+        else:
+            self.intermediate_act_fn = config.hidden_act
+
+    def forward(self, hidden_states):
+        hidden_states = self.dense(hidden_states)
+        hidden_states = self.intermediate_act_fn(hidden_states)
+        return hidden_states
+
 
 class BertLayer(nn.Module):
     def __init__(self, config):

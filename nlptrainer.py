@@ -42,6 +42,12 @@ def compute_metrics(pred):
         'recall': recall
     }
 
+
+def squared_relu(input, inplace):
+    result = torch.nn.functional(input, inplace)
+    return torch.pow(result,2)
+
+
 @dataclass
 class ModelArguments:
     """
@@ -282,6 +288,8 @@ def bert_train(config_path):
     logger.info("Training/evaluation parameters %s", training_args)
 
     # TODO: add SOTA activation
+    if model_args.activation == "squared_reLu":
+        model_args.activation = squared_reLu
     config = AutoConfig.from_pretrained(
         model_args.config_name if model_args.config_name else model_args.model_name_or_path,
         cache_dir=model_args.cache_dir,
