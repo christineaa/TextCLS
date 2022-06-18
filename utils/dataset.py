@@ -16,9 +16,15 @@ class BertDataset(Dataset):
         super(BertDataset, self).__init__()
         self.data = pd.read_csv(path, encoding='utf_8_sig')
         content_name = config.src_column1
+        content_name2 = config.src_column2
         label_name = config.tgt_column
+        self.nsp = False
         self.data["sentence"] = self.data[content_name]
         self.data["cut_sentence"] = self.data['sentence'].apply(clean_symbols)
+        if content_name2 is not None:
+            self.data["sentence2"] = self.data[content_name2]
+            self.data["cut_sentence2"] = self.data['sentence2'].apply(clean_symbols)
+            self.nsp = True
         # 标签映射到id
         if label_name is not None:
             label2id = {label: i for i, label in enumerate(self.data[label_name].unique())}
@@ -34,8 +40,10 @@ class BertDataset(Dataset):
     def __getitem__(self, i):
         data = self.data.iloc[i]
         text = data['cut_sentence']  # text数据
+        next_text = data['cut_sentence2'] if self.nsp else None
         text_dict = self.tokenizer(
             text,
+            text_pair=next_text,
             max_length=self.max_seq_length,
             padding="max_length" if self.pad_to_max_length else False,
             truncation=True

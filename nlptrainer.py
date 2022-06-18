@@ -28,11 +28,12 @@ from transformers.trainer_utils import is_main_process
 from transformers.integrations import TensorBoardCallback
 
 from utils.dataset import BertDataset
-
+from model.bert import OurBertForSequenceClassification
+from model.modified_bert import CustomizedBertConfig
 
 def compute_metrics(pred):
     labels = pred.label_ids
-    preds = pred.predictions.argmax(-1)
+    preds = pred.predictions[0].argmax(-1)
     precision, recall, f1, _ = precision_recall_fscore_support(labels, preds, average='micro')
     acc = accuracy_score(labels, preds)
     return {
@@ -104,7 +105,7 @@ class ModelArguments:
             "help": "Which layers should be frozen.(all, encoder, embeddings)"
         }
     )
-    freeze_layer: str = field(
+    freeze_layers: str = field(
         default="",
         metadata={
             "help": "Which layers should be frozen."
@@ -257,7 +258,7 @@ class OurTrainingArguments(TrainingArguments):
 
 
 def bert_train(config_path):
-    # config_path = "args.json"
+    config_path = "config/args.json"
     parser = HfArgumentParser((ModelArguments, DataTrainingArguments, TrainingArguments))
     model_args, data_args, training_args = parser.parse_json_file(json_file=config_path)
     # set log
@@ -287,17 +288,17 @@ def bert_train(config_path):
 
     logger.info("Training/evaluation parameters %s", training_args)
 
-    # TODO: add SOTA activation
     if model_args.activation == "squared_reLu":
         model_args.activation = squared_reLu
-    config = AutoConfig.from_pretrained(
+    config = CustomizedBertConfig.from_pretrained(
         model_args.config_name if model_args.config_name else model_args.model_name_or_path,
         cache_dir=model_args.cache_dir,
         hidden_act=model_args.activation,
         ln_type=model_args.ln_type,
         pooler_type=model_args.pooler_type,
         cls_type=model_args.cls_type,
-        freeze=model_args.freeze
+        freeze=model_args.freeze,
+        freeze_layers=model_args.freeze_layers
     )
     tokenizer = AutoTokenizer.from_pretrained(
         model_args.tokenizer_name if model_args.tokenizer_name else model_args.model_name_or_path,
@@ -312,7 +313,7 @@ def bert_train(config_path):
     config.num_labels = train_dataset.num_labels
     config.id2label = {v: k for k, v in train_dataset.label2id.items()}
 
-    model = AutoModelForSequenceClassification.from_pretrained(
+    model = OurBertForSequenceClassification.from_pretrained(
         model_args.model_name_or_path,
         from_tf=bool(".ckpt" in model_args.model_name_or_path),
         config=config,
@@ -337,12 +338,12 @@ def bert_train(config_path):
     trainer.remove_callback(transformers.trainer_callback.PrinterCallback)
     train_result = trainer.train()
     trainer.save_model(os.path.join(training_args.output_dir, "latest"))
-    output_train_file = os.path.join(training_args.output_dir, "train_results.txt")
+    output_train_file = os.path.join(training_args.output_dir, "train_results.json")
 
     if trainer.is_world_process_zero():
         # tokenizer.save_pretrained(training_args.output_dir)
         logger.info("***** Train results *****")
-        json.dump(train_result, open(output_train_file, "w"), indent=2)
+        json.dump(train_result[2], open(output_train_file, "w"), indent=2)
         for key, value in sorted(train_result.metrics.items()):
             logger.info(f"  {key} = {value}")
 
@@ -350,7 +351,7 @@ def bert_train(config_path):
         logger.info("*** Evaluate ***")
         results = trainer.evaluate(eval_dataset=test_dataset)
 
-        output_eval_file = os.path.join(training_args.output_dir, "eval_results.txt")
+        output_eval_file = os.path.join(training_args.output_dir, "eval_results.json")
         if trainer.is_world_process_zero():
             logger.info("***** Eval results *****")
             json.dump(results, open(output_eval_file, "w"), indent=2)
@@ -388,15 +389,15 @@ def bert_predict(config_path, is_infer=True):
 
     logger.info("Training/evaluation parameters %s", training_args)
 
-    # TODO: add SOTA activation
-    config = AutoConfig.from_pretrained(
+    config = CustomizedBertConfig.from_pretrained(
         model_args.config_name if model_args.config_name else model_args.model_name_or_path,
         cache_dir=model_args.cache_dir,
         hidden_act=model_args.activation,
         ln_type=model_args.ln_type,
         pooler_type=model_args.pooler_type,
         cls_type=model_args.cls_type,
-        freeze=model_args.freeze
+        freeze=model_args.freeze,
+        freeze_layers=model_args.freeze_layers
     )
     tokenizer = AutoTokenizer.from_pretrained(
         model_args.tokenizer_name if model_args.tokenizer_name else model_args.model_name_or_path,
@@ -406,7 +407,7 @@ def bert_predict(config_path, is_infer=True):
 
     test_dataset = BertDataset(data_args.test_file, tokenizer, data_args)
 
-    model = AutoModelForSequenceClassification.from_pretrained(
+    model = OurBertForSequenceClassification.from_pretrained(
         model_args.model_name_or_path,
         from_tf=bool(".ckpt" in model_args.model_name_or_path),
         config=config,

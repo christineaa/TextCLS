@@ -14,7 +14,7 @@ from transformers.modeling_outputs import BaseModelOutputWithPoolingAndCrossAtte
 from transformers.activations import ACT2FN
 from transformers.modeling_utils import apply_chunking_to_forward
 
-from modified_bert import CustomizedBertAttention as BertAttention
+from .modified_bert import CustomizedBertAttention as BertAttention
 
 
 class BertIntermediate(nn.Module):

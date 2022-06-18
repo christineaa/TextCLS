@@ -10,8 +10,8 @@ import transformers
 from transformers.models.bert.modeling_bert import BertPreTrainedModel
 from transformers.modeling_outputs import SequenceClassifierOutput
 
-from modeling_bert import BertModel
-from modified_bert import CustomizedPooler as BertPooler
+from .modeling_bert import BertModel
+from .modified_bert import CustomizedPooler as BertPooler
 
 
 class Conv1d(nn.Module):
@@ -35,7 +35,7 @@ class Conv1d(nn.Module):
         return [F.relu(conv(x)) for conv in self.convs]
 
 
-class CustomizedBertForSequenceClassification(BertPreTrainedModel):
+class OurBertForSequenceClassification(BertPreTrainedModel):
     def __init__(self, config):
         super().__init__(config)
         self.num_labels = config.num_labels
@@ -69,19 +69,19 @@ class CustomizedBertForSequenceClassification(BertPreTrainedModel):
         # Freeze parts of pretrained model
         # config['freeze'] can be "all" to freeze all layers,
         # or any number of prefixes, e.g. ['embeddings', 'encoder']
-        if config['freeze'] is not "":
+        if config.freeze != "":
             for name, param in self.bert.named_parameters():
                 if config['freeze'] == 'all' or name.startswith(config['freeze']):
                     param.requires_grad = False
-                    print(f"Froze layer: {name}")
+                    # print(f"Froze layer: {name}")
 
         # freeze_layers is a string "1,2,3" representing layer number
-        if config['freeze_layers'] is not "":
-            layer_indexes = [int(x) for x in config['freeze_layers'].split(",")]
+        if config.freeze_layers != "":
+            layer_indexes = [int(x) for x in config.freeze_layers.split(",")]
             for layer_idx in layer_indexes:
                 for param in list(self.bert.encoder.layer[layer_idx].parameters()):
                     param.requires_grad = False
-                print(f"Froze Layer: {layer_idx}")
+                # print(f"Froze Layer: {layer_idx}")
 
     def forward(
         self,
@@ -112,7 +112,7 @@ class CustomizedBertForSequenceClassification(BertPreTrainedModel):
             head_mask=head_mask,
             inputs_embeds=inputs_embeds,
             output_attentions=output_attentions,
-            output_hidden_states=output_hidden_states,
+            output_hidden_states=True,
             return_dict=return_dict,
         )
 

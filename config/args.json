@@ -1,9 +1,9 @@
 {
     "model_name_or_path": "bert-base-uncased",
     "ln_type": "post",
-    "freeze_layer": "10,11",
+    "freeze_layers": "10,11",
     "freeze": "",
-    "cls_type": "FC",
+    "cls_type": "fc",
     "pooler_type": "cls",
     "activation": "gelu",
     "train_file": "data/train.csv",
