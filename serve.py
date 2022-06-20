@@ -1,4 +1,6 @@
 import requests
+import json
+import time
 import ray
 from ray import serve
 from fastapi import FastAPI
@@ -36,8 +38,8 @@ class NLPServer:
         try:
             bert_train(item.config_path)
         except Exception as e:
-            requests.post("http://127.0.0.1:8080/train", data={'task_id': item.task_id, 'status': repr(e)})
-        requests.post("http://127.0.0.1:8080/train", data={'task_id': item.task_id, 'status': 'finish'})
+            requests.post("http://127.0.0.1:8080/train", data=json.dumps({'task_id': item.task_id, 'status': repr(e)}))
+        requests.post("http://127.0.0.1:8080/train", data=json.dumps({'task_id': item.task_id, 'status': 'finish'}))
         return "success"
 
     @app.post("/predict")
@@ -45,8 +47,8 @@ class NLPServer:
         try:
             bert_predict(item.config_path, is_infer=True)
         except Exception as e:
-            requests.post("http://127.0.0.1:8080/predict", data={'task_id': item.task_id, 'status': repr(e)})
-        requests.post("http://127.0.0.1:8080/predict", data={'task_id': item.task_id, 'status': 'finish'})
+            requests.post("http://127.0.0.1:8080/predict", data=json.dumps({'task_id': item.task_id, 'status': repr(e)}))
+        requests.post("http://127.0.0.1:8080/predict", data=json.dumps({'task_id': item.task_id, 'status': 'finish'}))
         return "success"
 
     @app.post("/evaluate")
@@ -54,11 +56,14 @@ class NLPServer:
         try:
             bert_predict(item.config_path, is_infer=False)
         except Exception as e:
-            requests.post("http://127.0.0.1:8080/evaluate", data={'task_id': item.task_id, 'status': repr(e)})
-        requests.post("http://127.0.0.1:8080/evaluate", data={'task_id': item.task_id, 'status': 'finish'})
+            requests.post("http://127.0.0.1:8080/evaluate", data=json.dumps({'task_id': item.task_id, 'status': repr(e)}))
+        requests.post("http://127.0.0.1:8080/evaluate", data=json.dumps({'task_id': item.task_id, 'status': 'finish'}))
         return "success"
 
 
 NLPServer.deploy()
 
-# 调用：requests.post("http://127.0.0.1:9000/NLPServer/train", data=json.dumps({'config_path': 'args.json'}))
+while True:
+    time.sleep(5)
+    # print(serve.list_deployments())
+# 调用：requests.post("http://127.0.0.1:9000/NLPServer/train", data=json.dumps({'config_path': 'args.json', 'task_id': 'job_1'}))

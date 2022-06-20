@@ -508,5 +508,5 @@ def evaluate(model, data_iter, device, is_infer=False):
 
 
 if __name__ == "__main__":
-    # bert_train("config/args.json")
-    bert_predict("config/eval_args.json", is_infer=True)
+    bert_train("config/args.json")
+    # bert_predict("config/eval_args.json", is_infer=True)

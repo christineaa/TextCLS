@@ -29,6 +29,7 @@
     "do_eval": true,
     "fp16": false,
     "repost_to": "tensorboard",
+    "logging_dir": "output/tensorboard",
     "disable_tqdm": true
 }
 
