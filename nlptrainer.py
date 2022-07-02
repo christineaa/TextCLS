@@ -4,6 +4,7 @@ import json
 from dataclasses import dataclass, field
 from typing import Optional, Union, List, Dict, Tuple
 import numpy as np
+import argparse
 
 import torch
 from torch.utils.data import DataLoader
@@ -30,6 +31,19 @@ from transformers.integrations import TensorBoardCallback
 from utils.dataset import BertDataset
 from model.bert import OurBertForSequenceClassification
 from model.modified_bert import CustomizedBertConfig
+
+
+def setup_args():
+    """Setup arguments."""
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("--function", type=str, required=True)
+    parser.add_argument("--config_file", type=str, required=True)
+
+    args = parser.parse_args()
+    return args
+
+
 
 def compute_metrics(pred):
     labels = pred.label_ids
@@ -258,7 +272,7 @@ class OurTrainingArguments(TrainingArguments):
 
 
 def bert_train(config_path):
-    config_path = "config/args.json"
+    # config_path = "config/args.json"
     parser = HfArgumentParser((ModelArguments, DataTrainingArguments, TrainingArguments))
     model_args, data_args, training_args = parser.parse_json_file(json_file=config_path)
     # set log
@@ -359,7 +373,16 @@ def bert_train(config_path):
                 logger.info(f"  {key} = {value}")
     return
 
-def bert_predict(config_path, is_infer=True):
+
+def bert_predict(config_path):
+    return bert_predict_interface(config_path, is_infer=True)
+
+
+def bert_eval(config_path):
+    return bert_predict_interface(config_path, is_infer=False)
+
+
+def bert_predict_interface(config_path, is_infer=True):
     parser = HfArgumentParser((ModelArguments, DataTrainingArguments, TrainingArguments))
     model_args, data_args, training_args = parser.parse_json_file(json_file=config_path)
     # set log
@@ -508,5 +531,7 @@ def evaluate(model, data_iter, device, is_infer=False):
 
 
 if __name__ == "__main__":
-    bert_train("config/args.json")
+    args = setup_args()
+    eval(args.function)(args.config_file)
+    # bert_train("config/args.json")
     # bert_predict("config/eval_args.json", is_infer=True)

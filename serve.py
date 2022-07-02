@@ -1,3 +1,5 @@
+import os
+import time
 import requests
 import json
 import time
@@ -11,6 +13,13 @@ from nlptrainer import bert_train, bert_predict
 
 class Item(BaseModel):
     config_path: str
+    user_dir: str
+    task_id: str
+
+
+class TensorboardItem(BaseModel):
+    port: str
+    user_dir: str
     task_id: str
 
 
@@ -36,34 +45,89 @@ class NLPServer:
     @app.post("/train")
     def setup(self, item: Item):
         try:
-            bert_train(item.config_path)
+            if os.getcwd() == '/root/TextCLS':
+                time.sleep(600)
+            else:
+                cmd = f"python nlptrainer.py --config_file={item.config_path} --function=bert_train " \
+                      f"& echo $! > {item.user_dir}/train.pid"
+                os.system(cmd)
+            # bert_train(item.config_path)
+            print("success")
         except Exception as e:
-            requests.post("http://127.0.0.1:8080/train", data=json.dumps({'task_id': item.task_id, 'status': repr(e)}))
-        requests.post("http://127.0.0.1:8080/train", data=json.dumps({'task_id': item.task_id, 'status': 'finish'}))
+            requests.post("http://127.0.0.1:8081/train", data=json.dumps({'task_id': item.task_id, 'status': repr(e)}))
+        requests.post("http://127.0.0.1:8081/train", data=json.dumps({'task_id': item.task_id, 'status': 'finish'}))
         return "success"
+
+    @app.post("/stop_train")
+    def setup(self, item: Item):
+        cmd = f"kill -9 `cat {item.user_dir}/train.pid`"
+        res = os.system(cmd)
+        return "success" if res == 0 else "fail"
 
     @app.post("/predict")
     def setup(self, item: Item):
         try:
-            bert_predict(item.config_path, is_infer=True)
+            if os.getcwd() == '/root/TextCLS':
+                time.sleep(600)
+            else:
+                cmd = f"python nlptrainer.py --config_file={item.config_path} --function=bert_predict " \
+                      f"& echo $! > {item.user_dir}/predict.pid"
+                os.system(cmd)
+            # bert_predict_interface(item.config_path, is_infer=True)
         except Exception as e:
-            requests.post("http://127.0.0.1:8080/predict", data=json.dumps({'task_id': item.task_id, 'status': repr(e)}))
-        requests.post("http://127.0.0.1:8080/predict", data=json.dumps({'task_id': item.task_id, 'status': 'finish'}))
+            requests.post("http://127.0.0.1:8081/predict", data=json.dumps({'task_id': item.task_id, 'status': repr(e)}))
+        requests.post("http://127.0.0.1:8081/predict", data=json.dumps({'task_id': item.task_id, 'status': 'finish'}))
         return "success"
+
+    @app.post("/stop_predict")
+    def setup(self, item: Item):
+        cmd = f"kill -9 `cat {item.user_dir}/predict.pid`"
+        res = os.system(cmd)
+        return "success" if res == 0 else "fail"
 
     @app.post("/evaluate")
     def setup(self, item: Item):
         try:
-            bert_predict(item.config_path, is_infer=False)
+            if os.getcwd() == '/root/TextCLS':
+                time.sleep(600)
+            else:
+                cmd = f"nohup python nlptrainer.py --config_file={item.config_path} --function=bert_eval " \
+                      f"& echo $! > {item.user_dir}/evaluation.pid"
+                os.system(cmd)
+            # bert_predict_interface(item.config_path, is_infer=False)
+            print("success")
         except Exception as e:
-            requests.post("http://127.0.0.1:8080/evaluate", data=json.dumps({'task_id': item.task_id, 'status': repr(e)}))
-        requests.post("http://127.0.0.1:8080/evaluate", data=json.dumps({'task_id': item.task_id, 'status': 'finish'}))
+            requests.post("http://127.0.0.1:8081/evaluate", data=json.dumps({'task_id': item.task_id, 'status': repr(e)}))
+        requests.post("http://127.0.0.1:8081/evaluate", data=json.dumps({'task_id': item.task_id, 'status': 'finish'}))
         return "success"
 
+    @app.post("/stop_evaluation")
+    def setup(self, item: Item):
+        cmd = f"kill -9 `cat {item.user_dir}/evaluation.pid`"
+        res = os.system(cmd)
+        return "success" if res == 0 else "fail"
+
+    @app.post("/tensorboard")
+    def setup(self, item: TensorboardItem):
+        cmd = f"nohup tensorboard --logdir={item.user_dir}/output/tensorboard --port={item.port} --host=0.0.0.0 " \
+              f"> {item.user_dir}/cmd.out 2>&1 & echo $! > {item.user_dir}/tensorboard.pid"
+        os.system(cmd)
+        time.sleep(600)
+        cmd = f"kill -9 `cat {item.user_dir}/tensorboard.pid`"
+        res = os.system(cmd)
+        return "success" if res == 0 else "fail"
+
+    @app.post("/stop_tensorboard")
+    def setup(self, item: TensorboardItem):
+        cmd = f"kill -9 `cat {item.user_dir}/tensorboard.pid`"
+        res = os.system(cmd)
+        return "success" if res == 0 else "fail"
 
 NLPServer.deploy()
 
 while True:
     time.sleep(5)
     # print(serve.list_deployments())
-# 调用：requests.post("http://127.0.0.1:9000/NLPServer/train", data=json.dumps({'config_path': 'args.json', 'task_id': 'job_1'}))
+# 调用train：requests.post("http://127.0.0.1:9000/NLPServer/train", data=json.dumps({'config_path': 'config/args.json', 'task_id': 'job_1', "user_dir": "./"}))
+# 停止train：requests.post("http://127.0.0.1:9000/NLPServer/stop_train", data=json.dumps({'config_path': '', 'task_id': 'job_1', "user_dir": "./"}))
+# 启用tensorboard：requests.post("http://127.0.0.1:9000/NLPServer/start_tensorboard", data=json.dumps({'port': '6006', 'task_id': 'job_1', "user_dir": "./"}))
