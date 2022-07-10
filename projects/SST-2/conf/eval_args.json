@@ -1,0 +1,18 @@
+{
+    "model_name_or_path": "train_output/checkpoint-3",
+    "ln_type": "post",
+    "freeze_layer": "10,11",
+    "freeze": "",
+    "cls_type": "fc",
+    "pooler_type": "cls",
+    "activation": "gelu",
+    "test_file": "data/test.csv",
+    "src_column1": "content",
+    "max_seq_length": 256,
+    "pad_to_max_length": false,
+    "output_dir": "output",
+    "overwrite_output_dir": true,
+    "per_device_eval_batch_size": 1,
+    "tgt_column": "label"
+}
+

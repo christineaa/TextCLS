@@ -5,16 +5,17 @@ import torch
 
 # tqdm.pandas()
 
+
 def clean_symbols(content):
-    return content
+    return content.lower()
 
 
 class BertDataset(Dataset):
     """数据集的创建"""
-
     def __init__(self, path, tokenizer, config):
         super(BertDataset, self).__init__()
-        self.data = pd.read_csv(path, encoding='utf_8_sig')
+        sep = "\t" if path.endswith("tsv") else ","
+        self.data = pd.read_csv(path, encoding='utf_8_sig', sep=sep)
         content_name = config.src_column1
         content_name2 = config.src_column2
         label_name = config.tgt_column
@@ -27,8 +28,8 @@ class BertDataset(Dataset):
             self.nsp = True
         # 标签映射到id
         if label_name is not None:
-            label2id = {label: i for i, label in enumerate(self.data[label_name].unique())}
-            self.data['category_id'] = self.data[label_name].apply(lambda x: x.strip()).map(label2id)
+            label2id = {str(label): i for i, label in enumerate(sorted(self.data[label_name].unique()))}
+            self.data['category_id'] = self.data[label_name].apply(lambda x: str(x).strip()).map(label2id)
             self.num_labels = len(label2id)
             self.label2id = label2id
 

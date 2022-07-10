@@ -1,0 +1,1 @@
+python nlptrainer.py --function bert_train --config_file projects/SST-2/conf/args.json

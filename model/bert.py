@@ -51,8 +51,8 @@ class OurBertForSequenceClassification(BertPreTrainedModel):
             self.self_pooler = BertPooler(config)
             self.classifier = nn.Linear(config.hidden_size, config.num_labels)
         elif config.cls_type == "cnn":
-            n_filters = 256
-            filter_sizes = [3, 5]
+            n_filters = 128
+            filter_sizes = [2, 3, 4, 5]
             self.convs = Conv1d(config.hidden_size, n_filters, filter_sizes)
             self.classifier = nn.Linear(len(filter_sizes) * n_filters, config.num_labels)
         elif config.cls_type == "attention":
@@ -71,7 +71,7 @@ class OurBertForSequenceClassification(BertPreTrainedModel):
         # or any number of prefixes, e.g. ['embeddings', 'encoder']
         if config.freeze != "":
             for name, param in self.bert.named_parameters():
-                if config['freeze'] == 'all' or name.startswith(config['freeze']):
+                if config.freeze == 'all' or name.startswith(config.freeze):
                     param.requires_grad = False
                     # print(f"Froze layer: {name}")
 

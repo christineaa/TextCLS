@@ -1,6 +1,4 @@
 output
-model/__pycache__
-utils/__pycache__
-__pycache__
-latest
-checkpoint-3
+**/__pycache__
+**/.DS_Store
+.idea

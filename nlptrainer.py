@@ -41,18 +41,17 @@ def setup_args():
     """Setup arguments."""
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--function", type=str, required=True)
+    parser.add_argument("--function", type=str, required=True, choices=["bert_train", "bert_predict", "bert_eval"])
     parser.add_argument("--config_file", type=str, required=True)
 
     args = parser.parse_args()
     return args
 
 
-
 def compute_metrics(pred):
     labels = pred.label_ids
     preds = pred.predictions[0].argmax(-1)
-    precision, recall, f1, _ = precision_recall_fscore_support(labels, preds, average='micro')
+    precision, recall, f1, _ = precision_recall_fscore_support(labels, preds, average='macro')
     acc = accuracy_score(labels, preds)
     return {
         'accuracy': acc,
@@ -138,7 +137,7 @@ class ModelArguments:
     activation: str = field(
         default="gelu",
         metadata={
-            "help": "What kind of activation function to use in BERT(gelu, , )."
+            "help": "What kind of activation function to use in BERT(gelu, relu, squared_relu)."
         }
     )
     pooler_type: str = field(
@@ -223,7 +222,7 @@ class DataTrainingArguments:
         else:
             if self.train_file is not None:
                 extension = self.train_file.split(".")[-1]
-                assert extension in ["csv", "json", "txt"], "`train_file` should be a csv, a json or a txt file."
+                assert extension in ["csv", "tsv"], "`train_file` should be a csv, or a tsv file."
 
 
 @dataclass
@@ -276,7 +275,6 @@ class OurTrainingArguments(TrainingArguments):
 
 
 def bert_train(config_path):
-    # config_path = "config/args.json"
     parser = HfArgumentParser((ModelArguments, DataTrainingArguments, TrainingArguments))
     model_args, data_args, training_args = parser.parse_json_file(json_file=config_path)
     # set log
@@ -300,24 +298,24 @@ def bert_train(config_path):
     )
     if is_main_process(training_args.local_rank):
         transformers.utils.logging.set_verbosity_info()
-        transformers.utils.logging.disable_default_handler()
+        # transformers.utils.logging.disable_default_handler()
+        transformers.utils.logging.enable_default_handler()
         transformers.utils.logging.enable_explicit_format()
         transformers.utils.logging.add_handler(file_handler)
 
     logger.info("Training/evaluation parameters %s", training_args)
 
-    if model_args.activation == "squared_reLu":
-        model_args.activation = squared_reLu
     config = CustomizedBertConfig.from_pretrained(
         model_args.config_name if model_args.config_name else model_args.model_name_or_path,
         cache_dir=model_args.cache_dir,
-        hidden_act=model_args.activation,
         ln_type=model_args.ln_type,
         pooler_type=model_args.pooler_type,
         cls_type=model_args.cls_type,
         freeze=model_args.freeze,
         freeze_layers=model_args.freeze_layers
     )
+    if model_args.activation == "squared_relu":
+        config.hidden_act = squared_relu
     tokenizer = AutoTokenizer.from_pretrained(
         model_args.tokenizer_name if model_args.tokenizer_name else model_args.model_name_or_path,
         cache_dir=model_args.cache_dir,
@@ -326,7 +324,6 @@ def bert_train(config_path):
 
     train_dataset = BertDataset(data_args.train_file, tokenizer, data_args)
     dev_dataset = BertDataset(data_args.valid_file, tokenizer, data_args)
-    test_dataset = BertDataset(data_args.test_file, tokenizer, data_args)
     config.label2id = train_dataset.label2id
     config.num_labels = train_dataset.num_labels
     config.id2label = {v: k for k, v in train_dataset.label2id.items()}
@@ -353,7 +350,7 @@ def bert_train(config_path):
         callbacks=[TensorBoardCallback],
         compute_metrics=compute_metrics
     )
-    trainer.remove_callback(transformers.trainer_callback.PrinterCallback)
+    # trainer.remove_callback(transformers.trainer_callback.PrinterCallback)
     train_result = trainer.train()
     trainer.save_model(os.path.join(training_args.output_dir, "latest"))
     output_train_file = os.path.join(training_args.output_dir, "train_results.json")
@@ -367,7 +364,7 @@ def bert_train(config_path):
 
     if training_args.do_eval:
         logger.info("*** Evaluate ***")
-        results = trainer.evaluate(eval_dataset=test_dataset)
+        results = trainer.evaluate(eval_dataset=dev_dataset)
 
         output_eval_file = os.path.join(training_args.output_dir, "eval_results.json")
         if trainer.is_world_process_zero():
