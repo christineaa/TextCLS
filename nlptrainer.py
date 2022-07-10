@@ -31,6 +31,7 @@ from transformers import (
 from transformers.file_utils import cached_property, torch_required, is_torch_available, is_torch_tpu_available
 from transformers.trainer_utils import is_main_process
 from transformers.integrations import TensorBoardCallback
+from transformers import EarlyStoppingCallback
 
 from utils.dataset import BertDataset
 from model.bert import OurBertForSequenceClassification
@@ -347,7 +348,7 @@ def bert_train(config_path):
         eval_dataset=dev_dataset if training_args.do_eval else None,
         tokenizer=tokenizer,
         data_collator=data_collator,
-        callbacks=[TensorBoardCallback],
+        callbacks=[TensorBoardCallback, EarlyStoppingCallback(early_stopping_patience=5)],
         compute_metrics=compute_metrics
     )
     # trainer.remove_callback(transformers.trainer_callback.PrinterCallback)

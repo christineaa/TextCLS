@@ -52,7 +52,7 @@ class OurBertForSequenceClassification(BertPreTrainedModel):
             self.classifier = nn.Linear(config.hidden_size, config.num_labels)
         elif config.cls_type == "cnn":
             n_filters = 256
-            filter_sizes = [3, 5]
+            filter_sizes = [2, 3, 5]
             self.convs = Conv1d(config.hidden_size, n_filters, filter_sizes)
             self.classifier = nn.Linear(len(filter_sizes) * n_filters, config.num_labels)
         elif config.cls_type == "attention":
