@@ -12,15 +12,15 @@ pip install "ray[serve]" # for API
 ### Running with script
 #### train
 ```bash
-python nlptrainer.py --function bert_train --config_file path/your/config
+python nlptrainer.py --function bert_train --config_file path/of/your/config
 ```
 #### evaluation
 ```bash
-python nlptrainer.py --function bert_eval --config_file path/your/config
+python nlptrainer.py --function bert_eval --config_file path/of/your/config
 ```
 #### prediction
 ```bash
-python nlptrainer.py --function bert_predict --config_file path/your/config
+python nlptrainer.py --function bert_predict --config_file path/of/your/config
 ```
 - An example of training configuration files is `./config/args.json`
 - An example of evaluation/prediction configuration files is `./config/eval_args.json`
