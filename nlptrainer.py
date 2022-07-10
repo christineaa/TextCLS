@@ -6,6 +6,9 @@ from dataclasses import dataclass, field
 from typing import Optional, Union, List, Dict, Tuple
 import numpy as np
 import argparse
+import pandas as pd
+import seaborn as sn
+import matplotlib.pyplot as plt
 
 import torch
 from torch.utils.data import DataLoader
@@ -458,14 +461,16 @@ def bert_predict_interface(config_path, is_infer=True):
         logits = {i: logit for i, logit in enumerate(pred_logits)}
         json.dump(logits, open(logits_file, "w"), indent=2)
 
-
-        pred_label = {i: config.id2label[idx] for i, idx in enumerate(pred_idx)}
-        output_file = os.path.join(training_args.output_dir, "predict.json")
-        json.dump(pred_label, open(output_file, "w"), indent=2)
+        pred_label = [config.id2label[idx] for idx in pred_idx]
+        pred_df = pd.read_csv(data_args.test_file, encoding='utf_8_sig')
+        pred_df["prediction"] = pred_label
+        output_file = os.path.join(training_args.output_dir, "predict.csv")
+        pred_df.to_csv(output_file)
 
     else:
         test_acc, micro_result, macro_result, test_loss, test_report, test_confusion = eval_out
         results = {
+            "label": config.id2label,
             "accuracy": test_acc,
             "loss": test_loss.item(),
             "micro_precision": micro_result[0],
@@ -477,6 +482,9 @@ def bert_predict_interface(config_path, is_infer=True):
             "report": test_report,
             "confusion_matrix": test_confusion.tolist()
         }
+        sn.heatmap(test_confusion, annot=True, cmap="YlGnBu",
+                   xticklabels=config.id2label.values(), yticklabels=config.id2label.values())
+        plt.savefig(os.path.join(training_args.output_dir, 'heatmap.png'), dpi=300)
         output_file = os.path.join(training_args.output_dir, "eval_results.json")
         json.dump(results, open(output_file, "w"), indent=2)
 
@@ -489,6 +497,7 @@ def bert_predict_interface(config_path, is_infer=True):
         logger.info("Precision, Recall and F1-Score...")
         logger.info(test_report)
         logger.info("Confusion Matrix...")
+        logger.info(config.id2label)
         logger.info(test_confusion)
     return
 
@@ -538,4 +547,4 @@ if __name__ == "__main__":
     else:
         eval(args.function)(args.config_file)
     # bert_train("config/args.json")
-    # bert_predict("config/eval_args.json", is_infer=True)
+    # bert_predict("config/eval_args.json")

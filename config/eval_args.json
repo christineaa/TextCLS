@@ -1,5 +1,5 @@
 {
-    "model_name_or_path": "output/checkpoint-3",
+    "model_name_or_path": "train_output/checkpoint-3",
     "ln_type": "post",
     "freeze_layer": "10,11",
     "freeze": "",

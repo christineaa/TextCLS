@@ -1,0 +1,235 @@
+[07/06/2022 22:41:59][4601656832][nlptrainer.py][line: 290][WARNING] >> Process rank: -1, device: cpu, n_gpu: 0, distributed training: False, 16-bits training: False
+[07/06/2022 22:41:59][4601656832][nlptrainer.py][line: 304][INFO] >> Training/evaluation parameters TrainingArguments(
+_n_gpu=0,
+adafactor=False,
+adam_beta1=0.9,
+adam_beta2=0.999,
+adam_epsilon=1e-08,
+bf16=False,
+bf16_full_eval=False,
+data_seed=None,
+dataloader_drop_last=False,
+dataloader_num_workers=0,
+dataloader_pin_memory=True,
+ddp_bucket_cap_mb=None,
+ddp_find_unused_parameters=None,
+debug=[],
+deepspeed=None,
+disable_tqdm=True,
+do_eval=True,
+do_predict=False,
+do_train=True,
+eval_accumulation_steps=None,
+eval_delay=0,
+eval_steps=None,
+evaluation_strategy=IntervalStrategy.EPOCH,
+fp16=False,
+fp16_backend=auto,
+fp16_full_eval=False,
+fp16_opt_level=O1,
+gradient_accumulation_steps=1,
+gradient_checkpointing=False,
+greater_is_better=False,
+group_by_length=False,
+half_precision_backend=auto,
+hub_model_id=None,
+hub_strategy=HubStrategy.EVERY_SAVE,
+hub_token=<HUB_TOKEN>,
+ignore_data_skip=False,
+label_names=None,
+label_smoothing_factor=0.0,
+learning_rate=5e-05,
+length_column_name=length,
+load_best_model_at_end=True,
+local_rank=-1,
+log_level=-1,
+log_level_replica=-1,
+log_on_each_node=True,
+logging_dir=output/tensorboard,
+logging_first_step=False,
+logging_nan_inf_filter=True,
+logging_steps=500,
+logging_strategy=IntervalStrategy.STEPS,
+lr_scheduler_type=SchedulerType.LINEAR,
+max_grad_norm=1.0,
+max_steps=-1,
+metric_for_best_model=loss,
+mp_parameters=,
+no_cuda=False,
+num_train_epochs=1,
+optim=OptimizerNames.ADAMW_HF,
+output_dir=output,
+overwrite_output_dir=True,
+past_index=-1,
+per_device_eval_batch_size=1,
+per_device_train_batch_size=1,
+prediction_loss_only=False,
+push_to_hub=False,
+push_to_hub_model_id=None,
+push_to_hub_organization=None,
+push_to_hub_token=<PUSH_TO_HUB_TOKEN>,
+remove_unused_columns=True,
+report_to=['tensorboard'],
+resume_from_checkpoint=None,
+run_name=output,
+save_on_each_node=False,
+save_steps=500,
+save_strategy=IntervalStrategy.EPOCH,
+save_total_limit=5,
+seed=42,
+sharded_ddp=[],
+skip_memory_metrics=True,
+tf32=None,
+tpu_metrics_debug=False,
+tpu_num_cores=None,
+use_legacy_prediction_loop=False,
+warmup_ratio=0.1,
+warmup_steps=0,
+weight_decay=0.01,
+xpu_backend=None,
+)
+[07/06/2022 22:42:02][4601656832][configuration_utils.py][line: 654][INFO] >> loading configuration file https://huggingface.co/bert-base-uncased/resolve/main/config.json from cache at /Users/caimingzhu/.cache/huggingface/transformers/3c61d016573b14f7f008c02c4e51a366c67ab274726fe2910691e2a761acf43e.37395cee442ab11005bcd270f3c34464dc1704b715b5d7d52b1a461abe3b9e4e
+[07/06/2022 22:42:02][4601656832][configuration_utils.py][line: 523][WARNING] >> You are using a model of type bert to instantiate a model of type . This is not supported for all configurations of models and can yield errors.
+[07/06/2022 22:42:02][4601656832][configuration_utils.py][line: 690][INFO] >> Model config CustomizedBertConfig {
+  "architectures": [
+    "BertForMaskedLM"
+  ],
+  "attention_probs_dropout_prob": 0.1,
+  "classifier_dropout": null,
+  "cls_type": "fc",
+  "freeze": "",
+  "freeze_layers": "10,11",
+  "gradient_checkpointing": false,
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  "hidden_size": 768,
+  "initializer_range": 0.02,
+  "intermediate_size": 3072,
+  "layer_norm_eps": 1e-12,
+  "ln_type": "post",
+  "max_position_embeddings": 512,
+  "num_attention_heads": 12,
+  "num_hidden_layers": 12,
+  "pad_token_id": 0,
+  "pooler_type": "cls",
+  "position_embedding_type": "absolute",
+  "transformers_version": "4.18.0",
+  "type_vocab_size": 2,
+  "use_cache": true,
+  "vocab_size": 30522
+}
+
+[07/06/2022 22:42:08][4601656832][configuration_utils.py][line: 654][INFO] >> loading configuration file https://huggingface.co/bert-base-uncased/resolve/main/config.json from cache at /Users/caimingzhu/.cache/huggingface/transformers/3c61d016573b14f7f008c02c4e51a366c67ab274726fe2910691e2a761acf43e.37395cee442ab11005bcd270f3c34464dc1704b715b5d7d52b1a461abe3b9e4e
+[07/06/2022 22:42:08][4601656832][configuration_utils.py][line: 690][INFO] >> Model config BertConfig {
+  "_name_or_path": "bert-base-uncased",
+  "architectures": [
+    "BertForMaskedLM"
+  ],
+  "attention_probs_dropout_prob": 0.1,
+  "classifier_dropout": null,
+  "gradient_checkpointing": false,
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  "hidden_size": 768,
+  "initializer_range": 0.02,
+  "intermediate_size": 3072,
+  "layer_norm_eps": 1e-12,
+  "max_position_embeddings": 512,
+  "model_type": "bert",
+  "num_attention_heads": 12,
+  "num_hidden_layers": 12,
+  "pad_token_id": 0,
+  "position_embedding_type": "absolute",
+  "transformers_version": "4.18.0",
+  "type_vocab_size": 2,
+  "use_cache": true,
+  "vocab_size": 30522
+}
+
+[07/06/2022 22:42:15][4601656832][tokenization_utils_base.py][line: 1778][INFO] >> loading file https://huggingface.co/bert-base-uncased/resolve/main/vocab.txt from cache at /Users/caimingzhu/.cache/huggingface/transformers/45c3f7a79a80e1cf0a489e5c62b43f173c15db47864303a55d623bb3c96f72a5.d789d64ebfe299b0e416afc4a169632f903f693095b4629a7ea271d5a0cf2c99
+[07/06/2022 22:42:15][4601656832][tokenization_utils_base.py][line: 1778][INFO] >> loading file https://huggingface.co/bert-base-uncased/resolve/main/added_tokens.json from cache at None
+[07/06/2022 22:42:15][4601656832][tokenization_utils_base.py][line: 1778][INFO] >> loading file https://huggingface.co/bert-base-uncased/resolve/main/special_tokens_map.json from cache at None
+[07/06/2022 22:42:15][4601656832][tokenization_utils_base.py][line: 1778][INFO] >> loading file https://huggingface.co/bert-base-uncased/resolve/main/tokenizer_config.json from cache at /Users/caimingzhu/.cache/huggingface/transformers/c1d7f0a763fb63861cc08553866f1fc3e5a6f4f07621be277452d26d71303b7e.20430bd8e10ef77a7d2977accefe796051e01bc2fc4aa146bc862997a1a15e79
+[07/06/2022 22:42:17][4601656832][configuration_utils.py][line: 654][INFO] >> loading configuration file https://huggingface.co/bert-base-uncased/resolve/main/config.json from cache at /Users/caimingzhu/.cache/huggingface/transformers/3c61d016573b14f7f008c02c4e51a366c67ab274726fe2910691e2a761acf43e.37395cee442ab11005bcd270f3c34464dc1704b715b5d7d52b1a461abe3b9e4e
+[07/06/2022 22:42:17][4601656832][configuration_utils.py][line: 690][INFO] >> Model config BertConfig {
+  "_name_or_path": "bert-base-uncased",
+  "architectures": [
+    "BertForMaskedLM"
+  ],
+  "attention_probs_dropout_prob": 0.1,
+  "classifier_dropout": null,
+  "gradient_checkpointing": false,
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  "hidden_size": 768,
+  "initializer_range": 0.02,
+  "intermediate_size": 3072,
+  "layer_norm_eps": 1e-12,
+  "max_position_embeddings": 512,
+  "model_type": "bert",
+  "num_attention_heads": 12,
+  "num_hidden_layers": 12,
+  "pad_token_id": 0,
+  "position_embedding_type": "absolute",
+  "transformers_version": "4.18.0",
+  "type_vocab_size": 2,
+  "use_cache": true,
+  "vocab_size": 30522
+}
+
+[07/06/2022 22:42:19][4601656832][modeling_utils.py][line: 1772][INFO] >> loading weights file https://huggingface.co/bert-base-uncased/resolve/main/pytorch_model.bin from cache at /Users/caimingzhu/.cache/huggingface/transformers/a8041bf617d7f94ea26d15e218abd04afc2004805632abc0ed2066aa16d50d04.faf6ea826ae9c5867d12b22257f9877e6b8367890837bd60f7c54a29633f7f2f
+[07/06/2022 22:42:20][4601656832][modeling_utils.py][line: 2048][WARNING] >> Some weights of the model checkpoint at bert-base-uncased were not used when initializing OurBertForSequenceClassification: ['cls.seq_relationship.weight', 'cls.predictions.decoder.weight', 'cls.predictions.transform.LayerNorm.bias', 'cls.predictions.transform.dense.weight', 'cls.predictions.transform.dense.bias', 'cls.seq_relationship.bias', 'cls.predictions.bias', 'cls.predictions.transform.LayerNorm.weight']
+- This IS expected if you are initializing OurBertForSequenceClassification from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).
+- This IS NOT expected if you are initializing OurBertForSequenceClassification from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+[07/06/2022 22:42:20][4601656832][modeling_utils.py][line: 2059][WARNING] >> Some weights of OurBertForSequenceClassification were not initialized from the model checkpoint at bert-base-uncased and are newly initialized: ['classifier.weight', 'classifier.bias']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+[07/06/2022 22:42:20][4601656832][trainer_callback.py][line: 310][WARNING] >> You are adding a <class 'transformers.integrations.TensorBoardCallback'> to the callbacks of this Trainer, but there is already one. The currentlist of callbacks is
+:DefaultFlowCallback
+TensorBoardCallback
+[07/06/2022 22:42:20][4601656832][trainer.py][line: 1290][INFO] >> ***** Running training *****
+[07/06/2022 22:42:20][4601656832][trainer.py][line: 1291][INFO] >>   Num examples = 3
+[07/06/2022 22:42:20][4601656832][trainer.py][line: 1292][INFO] >>   Num Epochs = 1
+[07/06/2022 22:42:20][4601656832][trainer.py][line: 1293][INFO] >>   Instantaneous batch size per device = 1
+[07/06/2022 22:42:20][4601656832][trainer.py][line: 1294][INFO] >>   Total train batch size (w. parallel, distributed & accumulation) = 1
+[07/06/2022 22:42:20][4601656832][trainer.py][line: 1295][INFO] >>   Gradient Accumulation steps = 1
+[07/06/2022 22:42:20][4601656832][trainer.py][line: 1296][INFO] >>   Total optimization steps = 3
+[07/06/2022 22:42:22][4601656832][trainer.py][line: 2416][INFO] >> ***** Running Evaluation *****
+[07/06/2022 22:42:22][4601656832][trainer.py][line: 2418][INFO] >>   Num examples = 2
+[07/06/2022 22:42:22][4601656832][trainer.py][line: 2421][INFO] >>   Batch size = 1
+[07/06/2022 22:42:22][4601656832][trainer.py][line: 2166][INFO] >> Saving model checkpoint to output/checkpoint-3
+[07/06/2022 22:42:22][4601656832][configuration_utils.py][line: 441][INFO] >> Configuration saved in output/checkpoint-3/config.json
+[07/06/2022 22:42:22][4601656832][modeling_utils.py][line: 1378][INFO] >> Model weights saved in output/checkpoint-3/pytorch_model.bin
+[07/06/2022 22:42:22][4601656832][tokenization_utils_base.py][line: 2086][INFO] >> tokenizer config file saved in output/checkpoint-3/tokenizer_config.json
+[07/06/2022 22:42:22][4601656832][tokenization_utils_base.py][line: 2092][INFO] >> Special tokens file saved in output/checkpoint-3/special_tokens_map.json
+[07/06/2022 22:42:23][4601656832][trainer.py][line: 1530][INFO] >> 
+
+Training completed. Do not forget to share your model on huggingface.co/models =)
+
+
+[07/06/2022 22:42:23][4601656832][trainer.py][line: 1538][INFO] >> Loading best model from output/checkpoint-3 (score: 1.5323201417922974).
+[07/06/2022 22:42:23][4601656832][trainer.py][line: 2166][INFO] >> Saving model checkpoint to output/latest
+[07/06/2022 22:42:23][4601656832][configuration_utils.py][line: 441][INFO] >> Configuration saved in output/latest/config.json
+[07/06/2022 22:42:24][4601656832][modeling_utils.py][line: 1378][INFO] >> Model weights saved in output/latest/pytorch_model.bin
+[07/06/2022 22:42:24][4601656832][tokenization_utils_base.py][line: 2086][INFO] >> tokenizer config file saved in output/latest/tokenizer_config.json
+[07/06/2022 22:42:24][4601656832][tokenization_utils_base.py][line: 2092][INFO] >> Special tokens file saved in output/latest/special_tokens_map.json
+[07/06/2022 22:42:24][4601656832][nlptrainer.py][line: 360][INFO] >> ***** Train results *****
+[07/06/2022 22:42:24][4601656832][nlptrainer.py][line: 363][INFO] >>   epoch = 1.0
+[07/06/2022 22:42:24][4601656832][nlptrainer.py][line: 363][INFO] >>   total_flos = 10791761274.0
+[07/06/2022 22:42:24][4601656832][nlptrainer.py][line: 363][INFO] >>   train_loss = 1.4035836855570476
+[07/06/2022 22:42:24][4601656832][nlptrainer.py][line: 363][INFO] >>   train_runtime = 3.244
+[07/06/2022 22:42:24][4601656832][nlptrainer.py][line: 363][INFO] >>   train_samples_per_second = 0.925
+[07/06/2022 22:42:24][4601656832][nlptrainer.py][line: 363][INFO] >>   train_steps_per_second = 0.925
+[07/06/2022 22:42:24][4601656832][nlptrainer.py][line: 366][INFO] >> *** Evaluate ***
+[07/06/2022 22:42:24][4601656832][trainer.py][line: 2416][INFO] >> ***** Running Evaluation *****
+[07/06/2022 22:42:24][4601656832][trainer.py][line: 2418][INFO] >>   Num examples = 3
+[07/06/2022 22:42:24][4601656832][trainer.py][line: 2421][INFO] >>   Batch size = 1
+[07/06/2022 22:42:24][4601656832][nlptrainer.py][line: 371][INFO] >> ***** Eval results *****
+[07/06/2022 22:42:24][4601656832][nlptrainer.py][line: 374][INFO] >>   epoch = 1.0
+[07/06/2022 22:42:24][4601656832][nlptrainer.py][line: 374][INFO] >>   eval_accuracy = 0.3333333333333333
+[07/06/2022 22:42:24][4601656832][nlptrainer.py][line: 374][INFO] >>   eval_f1 = 0.3333333333333333
+[07/06/2022 22:42:24][4601656832][nlptrainer.py][line: 374][INFO] >>   eval_loss = 1.2875432968139648
+[07/06/2022 22:42:24][4601656832][nlptrainer.py][line: 374][INFO] >>   eval_precision = 0.3333333333333333
+[07/06/2022 22:42:24][4601656832][nlptrainer.py][line: 374][INFO] >>   eval_recall = 0.3333333333333333
+[07/06/2022 22:42:24][4601656832][nlptrainer.py][line: 374][INFO] >>   eval_runtime = 0.2052
+[07/06/2022 22:42:24][4601656832][nlptrainer.py][line: 374][INFO] >>   eval_samples_per_second = 14.621
+[07/06/2022 22:42:24][4601656832][nlptrainer.py][line: 374][INFO] >>   eval_steps_per_second = 14.621

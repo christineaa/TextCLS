@@ -19,7 +19,6 @@ class Item(BaseModel):
 class TensorboardItem(BaseModel):
     port: str
     user_dir: str
-    task_id: str
 
 
 ray.init()
@@ -50,8 +49,8 @@ class NLPServer:
             # bert_train(item.config_path)
             print("success")
         except Exception as e:
-            requests.post("http://127.0.0.1:8081/train", data=json.dumps({'task_id': item.task_id, 'status': repr(e)}))
-        requests.post("http://127.0.0.1:8081/train", data=json.dumps({'task_id': item.task_id, 'status': 'finish'}))
+            requests.post("http://127.0.0.1:8088/train", data=json.dumps({'task_id': item.task_id, 'status': repr(e)}))
+        requests.post("http://127.0.0.1:8088/train", data=json.dumps({'task_id': item.task_id, 'status': 'finish'}))
         return "success"
 
     @app.post("/stop_train")
@@ -68,8 +67,8 @@ class NLPServer:
             os.system(cmd)
             # bert_predict_interface(item.config_path, is_infer=True)
         except Exception as e:
-            requests.post("http://127.0.0.1:8081/predict", data=json.dumps({'task_id': item.task_id, 'status': repr(e)}))
-        requests.post("http://127.0.0.1:8081/predict", data=json.dumps({'task_id': item.task_id, 'status': 'finish'}))
+            requests.post("http://127.0.0.1:8088/predict", data=json.dumps({'task_id': item.task_id, 'status': repr(e)}))
+        requests.post("http://127.0.0.1:8088/predict", data=json.dumps({'task_id': item.task_id, 'status': 'finish'}))
         return "success"
 
     @app.post("/stop_predict")
@@ -87,8 +86,8 @@ class NLPServer:
             # bert_predict_interface(item.config_path, is_infer=False)
             print("success")
         except Exception as e:
-            requests.post("http://127.0.0.1:8081/evaluate", data=json.dumps({'task_id': item.task_id, 'status': repr(e)}))
-        requests.post("http://127.0.0.1:8081/evaluate", data=json.dumps({'task_id': item.task_id, 'status': 'finish'}))
+            requests.post("http://127.0.0.1:8088/evaluate", data=json.dumps({'task_id': item.task_id, 'status': repr(e)}))
+        requests.post("http://127.0.0.1:8088/evaluate", data=json.dumps({'task_id': item.task_id, 'status': 'finish'}))
         return "success"
 
     @app.post("/stop_evaluation")
@@ -120,4 +119,4 @@ while True:
     # print(serve.list_deployments())
 # 调用train：requests.post("http://127.0.0.1:9000/NLPServer/train", data=json.dumps({'config_path': 'config/args.json', 'task_id': 'job_1', "user_dir": "./"}))
 # 停止train：requests.post("http://127.0.0.1:9000/NLPServer/stop_train", data=json.dumps({'config_path': '', 'task_id': 'job_1', "user_dir": "./"}))
-# 启用tensorboard：requests.post("http://127.0.0.1:9000/NLPServer/tensorboard", data=json.dumps({'port': '6006', 'task_id': 'job_1', "user_dir": "./"}))
+# 启用tensorboard：requests.post("http://127.0.0.1:9000/NLPServer/tensorboard", data=json.dumps({'port': '6006', "user_dir": "./"}))
