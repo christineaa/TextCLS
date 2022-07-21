@@ -295,8 +295,10 @@ def bert_train(config_path):
     )
     if is_main_process(training_args.local_rank):
         transformers.utils.logging.set_verbosity_info()
-        transformers.utils.logging.disable_default_handler()
-        # transformers.utils.logging.enable_default_handler()
+        if model_args.activation == "squared_relu":
+            transformers.utils.logging.enable_default_handler()
+        else:
+            transformers.utils.logging.disable_default_handler()
         transformers.utils.logging.enable_explicit_format()
         transformers.utils.logging.add_handler(file_handler)
 
@@ -310,8 +312,7 @@ def bert_train(config_path):
         cls_type=model_args.cls_type,
         freeze=model_args.freeze,
         freeze_layers=model_args.freeze_layers,
-        model_name_or_path=model_args.model_name_or_path,
-        hidden_act=model_args.activation
+        model_name_or_path=model_args.model_name_or_path
     )
     tokenizer = AutoTokenizer.from_pretrained(
         model_args.tokenizer_name if model_args.tokenizer_name else model_args.model_name_or_path,
@@ -509,7 +510,7 @@ def evaluate(model, data_iter, device, is_infer=False):
         for batch in data_iter:
             input_ids = batch["input_ids"].to(device, non_blocking=True)
             attention_mask = batch["attention_mask"].to(device, non_blocking=True)
-            token_type_ids = batch["token_type_ids"].to(device, non_blocking=True)
+            token_type_ids = batch["token_type_ids"].to(device, non_blocking=True) if "token_type_ids" in batch else None
             if is_infer:
                 outputs = model(input_ids, attention_mask, token_type_ids)
             else:

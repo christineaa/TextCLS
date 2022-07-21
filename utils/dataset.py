@@ -49,15 +49,8 @@ class BertDataset(Dataset):
             padding="max_length" if self.pad_to_max_length else False,
             truncation=True
         )
-        input_ids, attention_mask, token_type_ids = text_dict['input_ids'], \
-                                                    text_dict['attention_mask'], \
-                                                    text_dict['token_type_ids'] if 'token_type_ids' in text_dict else None
 
-        output = {
-            "input_ids": input_ids,
-            'attention_mask': attention_mask,
-            "token_type_ids": token_type_ids,
-        }
+        output = text_dict
         if self.label_name:
             labels = int(data['category_id'])
             output["labels"] = labels

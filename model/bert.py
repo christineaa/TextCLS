@@ -17,7 +17,7 @@ from .modified_bert import CustomizedPooler as BertPooler
 
 def squared_relu(input, inplace):
     result = torch.nn.functional(input, inplace)
-    return torch.pow(result,2)
+    return torch.pow(result, 2)
 
 
 class Conv1d(nn.Module):
