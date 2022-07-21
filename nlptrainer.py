@@ -295,8 +295,8 @@ def bert_train(config_path):
     )
     if is_main_process(training_args.local_rank):
         transformers.utils.logging.set_verbosity_info()
-        # transformers.utils.logging.disable_default_handler()
-        transformers.utils.logging.enable_default_handler()
+        transformers.utils.logging.disable_default_handler()
+        # transformers.utils.logging.enable_default_handler()
         transformers.utils.logging.enable_explicit_format()
         transformers.utils.logging.add_handler(file_handler)
 
@@ -352,7 +352,7 @@ def bert_train(config_path):
         callbacks=[TensorBoardCallback, EarlyStoppingCallback(early_stopping_patience=5)],
         compute_metrics=compute_metrics
     )
-    # trainer.remove_callback(transformers.trainer_callback.PrinterCallback)
+    trainer.remove_callback(transformers.trainer_callback.PrinterCallback)
     train_result = trainer.train()
     trainer.save_model(os.path.join(training_args.output_dir, "latest"))
     output_train_file = os.path.join(training_args.output_dir, "train_results.json")
