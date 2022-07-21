@@ -296,7 +296,11 @@ def bert_train(config_path):
     if is_main_process(training_args.local_rank):
         transformers.utils.logging.set_verbosity_info()
         transformers.utils.logging.disable_default_handler()
+<<<<<<< HEAD
         # transformers.utils.logging.enable_default_handler()
+=======
+#         transformers.utils.logging.enable_default_handler()
+>>>>>>> 1c411c350abc8c3c082e90fd4cc1d6dad8449176
         transformers.utils.logging.enable_explicit_format()
         transformers.utils.logging.add_handler(file_handler)
 
