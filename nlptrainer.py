@@ -1,6 +1,7 @@
 import logging
 import os
 import time
+import requests
 import json
 from dataclasses import dataclass, field
 from typing import Optional, Union, List, Dict, Tuple
@@ -44,7 +45,7 @@ def setup_args():
 
     parser.add_argument("--function", type=str, required=True, choices=["bert_train", "bert_predict", "bert_eval"])
     parser.add_argument("--config_file", type=str, required=True)
-
+    parser.add_argument("--task_id", type=str, required=True)
     args = parser.parse_args()
     return args
 
@@ -60,11 +61,6 @@ def compute_metrics(pred):
         'precision': precision,
         'recall': recall
     }
-
-
-def squared_relu(input, inplace):
-    result = torch.nn.functional(input, inplace)
-    return torch.pow(result,2)
 
 
 @dataclass
@@ -313,10 +309,10 @@ def bert_train(config_path):
         pooler_type=model_args.pooler_type,
         cls_type=model_args.cls_type,
         freeze=model_args.freeze,
-        freeze_layers=model_args.freeze_layers
+        freeze_layers=model_args.freeze_layers,
+        model_name_or_path=model_args.model_name_or_path,
+        hidden_act=model_args.activation
     )
-    if model_args.activation == "squared_relu":
-        config.hidden_act = squared_relu
     tokenizer = AutoTokenizer.from_pretrained(
         model_args.tokenizer_name if model_args.tokenizer_name else model_args.model_name_or_path,
         cache_dir=model_args.cache_dir,
@@ -329,12 +325,17 @@ def bert_train(config_path):
     config.num_labels = train_dataset.num_labels
     config.id2label = {v: k for k, v in train_dataset.label2id.items()}
 
-    model = OurBertForSequenceClassification.from_pretrained(
-        model_args.model_name_or_path,
-        from_tf=bool(".ckpt" in model_args.model_name_or_path),
-        config=config,
-        cache_dir=model_args.cache_dir
-    )
+    if "roberta" in model_args.model_name_or_path or \
+        "albert" in model_args.model_name_or_path or \
+        "distilbert" in model_args.model_name_or_path:
+        model = OurBertForSequenceClassification(config=config)
+    else:
+        model = OurBertForSequenceClassification.from_pretrained(
+            model_args.model_name_or_path,
+            config=config,
+            from_tf=bool(".ckpt" in model_args.model_name_or_path),
+            cache_dir=model_args.cache_dir
+        )
 
     if data_args.pad_to_max_length:
         data_collator = default_data_collator
@@ -544,5 +545,6 @@ if __name__ == "__main__":
         time.sleep(600)
     else:
         eval(args.function)(args.config_file)
+    requests.post("http://127.0.0.1:8088/train", data=json.dumps({'task_id': args.task_id, 'status': 'finish'}))
     # bert_train("config/args.json")
     # bert_predict("config/eval_args.json")

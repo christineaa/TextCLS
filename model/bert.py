@@ -9,9 +9,15 @@ from torch.nn import BCEWithLogitsLoss, CrossEntropyLoss, MSELoss
 import transformers
 from transformers.models.bert.modeling_bert import BertPreTrainedModel
 from transformers.modeling_outputs import SequenceClassifierOutput
+from transformers import AutoModel, AutoConfig
 
 from .modeling_bert import BertModel
 from .modified_bert import CustomizedPooler as BertPooler
+
+
+def squared_relu(input, inplace):
+    result = torch.nn.functional(input, inplace)
+    return torch.pow(result,2)
 
 
 class Conv1d(nn.Module):
@@ -38,10 +44,25 @@ class Conv1d(nn.Module):
 class OurBertForSequenceClassification(BertPreTrainedModel):
     def __init__(self, config):
         super().__init__(config)
+
         self.num_labels = config.num_labels
         self.config = config
 
-        self.bert = BertModel(config)
+        if "roberta" in config.model_name_or_path or \
+            "albert" in config.model_name_or_path or \
+            "distilbert" in config.model_name_or_path:
+            model_config = AutoConfig.from_pretrained(config.model_name_or_path)
+            if config.hidden_act == "squared_relu":
+                model_config.hidden_act = squared_relu
+            else:
+                model_config.hidden_act = config.hidden_act
+            self.bert = AutoModel.from_pretrained(config.model_name_or_path, config=model_config)
+        else:
+            if config.hidden_act == "squared_relu":
+                config.hidden_act = squared_relu
+            else:
+                config.hidden_act = config.hidden_act
+            self.bert = BertModel(config)
         classifier_dropout = (
             config.classifier_dropout if config.classifier_dropout is not None else config.hidden_dropout_prob
         )
@@ -64,7 +85,7 @@ class OurBertForSequenceClassification(BertPreTrainedModel):
             nn.init.uniform_(self.u_w, -0.1, 0.1)
 
         # Initialize weights and apply final processing
-        self.post_init()
+        # self.post_init()
 
         # Freeze parts of pretrained model
         # config['freeze'] can be "all" to freeze all layers,

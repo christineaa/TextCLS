@@ -102,6 +102,7 @@ class CustomizedPooler(nn.Module):
 class CustomizedBertConfig(PretrainedConfig):
     def __init__(
         self,
+        model_name_or_path="bert-base-uncased",
         vocab_size=30522,
         hidden_size=768,
         num_hidden_layers=12,
@@ -126,7 +127,7 @@ class CustomizedBertConfig(PretrainedConfig):
         **kwargs
     ):
         super().__init__(pad_token_id=pad_token_id, **kwargs)
-
+        self.model_name_or_path = model_name_or_path
         self.vocab_size = vocab_size
         self.hidden_size = hidden_size
         self.num_hidden_layers = num_hidden_layers

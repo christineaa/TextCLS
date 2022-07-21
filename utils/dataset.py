@@ -51,7 +51,7 @@ class BertDataset(Dataset):
         )
         input_ids, attention_mask, token_type_ids = text_dict['input_ids'], \
                                                     text_dict['attention_mask'], \
-                                                    text_dict['token_type_ids']
+                                                    text_dict['token_type_ids'] if 'token_type_ids' in text_dict else None
 
         output = {
             "input_ids": input_ids,
