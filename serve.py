@@ -42,14 +42,10 @@ class NLPServer:
 
     @app.post("/train")
     def setup(self, item: Item):
-        try:
-            cmd = f"python nlptrainer.py --config_file={item.config_path} --function=bert_train --task_id={item.task_id}" \
-                  f"& echo $! > {item.user_dir}/train.pid"
-            os.system(cmd)
-            # bert_train(item.config_path)
-            print("success")
-        except Exception as e:
-            requests.post("http://127.0.0.1:8088/train", data={'task_id': item.task_id, 'status': repr(e)})
+        cmd = f"python nlptrainer.py --config_file={item.config_path} --function=bert_train --task_id={item.task_id}" \
+              f"& echo $! > {item.user_dir}/train.pid"
+        os.system(cmd)
+        # bert_train(item.config_path)
         return "success"
 
     @app.post("/stop_train")
@@ -60,13 +56,10 @@ class NLPServer:
 
     @app.post("/predict")
     def setup(self, item: Item):
-        try:
-            cmd = f"python nlptrainer.py --config_file={item.config_path} --function=bert_predict --task_id={item.task_id}" \
-                  f"& echo $! > {item.user_dir}/predict.pid"
-            os.system(cmd)
-            # bert_predict_interface(item.config_path, is_infer=True)
-        except Exception as e:
-            requests.post("http://127.0.0.1:8088/train", data={'task_id': item.task_id, 'status': repr(e)})
+        cmd = f"python nlptrainer.py --config_file={item.config_path} --function=bert_predict --task_id={item.task_id}" \
+              f"& echo $! > {item.user_dir}/predict.pid"
+        os.system(cmd)
+        # bert_predict_interface(item.config_path, is_infer=True)
         return "success"
 
     @app.post("/stop_predict")
@@ -77,14 +70,10 @@ class NLPServer:
 
     @app.post("/evaluate")
     def setup(self, item: Item):
-        try:
-            cmd = f"nohup python nlptrainer.py --config_file={item.config_path} --function=bert_eval --task_id={item.task_id}" \
-                  f"& echo $! > {item.user_dir}/evaluation.pid"
-            os.system(cmd)
-            # bert_predict_interface(item.config_path, is_infer=False)
-            print("success")
-        except Exception as e:
-            requests.post("http://127.0.0.1:8088/train", data={'task_id': item.task_id, 'status': repr(e)})
+        cmd = f"nohup python nlptrainer.py --config_file={item.config_path} --function=bert_eval --task_id={item.task_id}" \
+              f"& echo $! > {item.user_dir}/evaluation.pid"
+        os.system(cmd)
+        # bert_predict_interface(item.config_path, is_infer=False)
         return "success"
 
     @app.post("/stop_evaluation")

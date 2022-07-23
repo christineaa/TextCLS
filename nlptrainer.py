@@ -544,10 +544,14 @@ def evaluate(model, data_iter, device, is_infer=False):
 
 if __name__ == "__main__":
     args = setup_args()
-    if os.getcwd() == '/root/TextCLS':
-        time.sleep(120)
+    try:
+        if os.getcwd() == '/root/TextCLS':
+            time.sleep(120)
+        else:
+            eval(args.function)(args.config_file)
+    except Exception as e:
+        requests.post("http://127.0.0.1:8088/train", data={'task_id': item.task_id, 'status': repr(e)})
     else:
-        eval(args.function)(args.config_file)
-    requests.post("http://127.0.0.1:8088/train", data={'task_id': args.task_id, 'status': 'finish'})
+        requests.post("http://127.0.0.1:8088/train", data={'task_id': args.task_id, 'status': 'finish'})
     # bert_train("config/args.json")
     # bert_predict("config/eval_args.json")
