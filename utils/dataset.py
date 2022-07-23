@@ -16,18 +16,20 @@ class BertDataset(Dataset):
         super(BertDataset, self).__init__()
         sep = "\t" if path.endswith("tsv") else ","
         self.data = pd.read_csv(path, encoding='utf_8_sig', sep=sep)
-        content_name = config.src_column1
-        content_name2 = config.src_column2
+        columns = self.data.columns
         label_name = config.tgt_column
+        content_name = config.src_column1 if config.src_column1 in columns else columns[int(config.src_column1)]
         self.nsp = False
         self.data["sentence"] = self.data[content_name]
         self.data["cut_sentence"] = self.data['sentence'].apply(clean_symbols)
-        if content_name2 is not None:
+        if config.src_column2 is not None:
+            content_name2 = config.src_column2 if config.src_column2 in columns else columns[int(config.src_column2)]
             self.data["sentence2"] = self.data[content_name2]
             self.data["cut_sentence2"] = self.data['sentence2'].apply(clean_symbols)
             self.nsp = True
         # 标签映射到id
         if label_name is not None:
+            label_name = label_name if label_name in columns else columns[int(label_name)]
             label2id = {str(label): i for i, label in enumerate(sorted(self.data[label_name].unique()))}
             self.data['category_id'] = self.data[label_name].apply(lambda x: str(x).strip()).map(label2id)
             self.num_labels = len(label2id)

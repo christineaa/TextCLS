@@ -126,7 +126,7 @@ class ModelArguments:
         }
     )
     cls_type: str = field(
-        default="FC",
+        default="fc",
         metadata={
             "help": "What kind of classifier to use after backbone(FC, lstm, testcnn)."
         }
@@ -307,6 +307,7 @@ def bert_train(config_path):
     config = CustomizedBertConfig.from_pretrained(
         model_args.config_name if model_args.config_name else model_args.model_name_or_path,
         cache_dir=model_args.cache_dir,
+        hidden_act=model_args.activation,
         ln_type=model_args.ln_type,
         pooler_type=model_args.pooler_type,
         cls_type=model_args.cls_type,
@@ -415,7 +416,7 @@ def bert_predict_interface(config_path, is_infer=True):
         transformers.utils.logging.add_handler(file_handler)
 
     logger.info("Training/evaluation parameters %s", training_args)
-
+    model_args.model_name_or_path = os.path.join(model_args.model_name_or_path, "latest")
     config = CustomizedBertConfig.from_pretrained(
         model_args.config_name if model_args.config_name else model_args.model_name_or_path,
         cache_dir=model_args.cache_dir,
@@ -424,7 +425,8 @@ def bert_predict_interface(config_path, is_infer=True):
         pooler_type=model_args.pooler_type,
         cls_type=model_args.cls_type,
         freeze=model_args.freeze,
-        freeze_layers=model_args.freeze_layers
+        freeze_layers=model_args.freeze_layers,
+        model_name_or_path=model_args.model_name_or_path
     )
     tokenizer = AutoTokenizer.from_pretrained(
         model_args.tokenizer_name if model_args.tokenizer_name else model_args.model_name_or_path,
@@ -543,7 +545,7 @@ def evaluate(model, data_iter, device, is_infer=False):
 if __name__ == "__main__":
     args = setup_args()
     if os.getcwd() == '/root/TextCLS':
-        time.sleep(600)
+        time.sleep(120)
     else:
         eval(args.function)(args.config_file)
     requests.post("http://127.0.0.1:8088/train", data=json.dumps({'task_id': args.task_id, 'status': 'finish'}))

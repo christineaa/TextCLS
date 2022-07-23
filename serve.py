@@ -95,7 +95,7 @@ class NLPServer:
 
     @app.post("/tensorboard")
     def setup(self, item: TensorboardItem):
-        cmd = f"nohup tensorboard --logdir={item.user_dir}/output/tensorboard --port={item.port} --host=0.0.0.0 " \
+        cmd = f"nohup tensorboard --logdir={item.user_dir}/tensorboard --port={item.port} --host=0.0.0.0 " \
               f"> {item.user_dir}/tensorboard.out 2>&1 & echo $! > {item.user_dir}/tensorboard.pid"
         os.system(cmd)
         time.sleep(600)
@@ -115,5 +115,5 @@ while True:
     time.sleep(5)
     # print(serve.list_deployments())
 # 调用train：requests.post("http://127.0.0.1:9000/NLPServer/train", data=json.dumps({'config_path': 'config/args.json', 'task_id': 'job_1', "user_dir": "./"}))
-# 停止train：requests.post("http://127.0.0.1:9000/NLPServer/stop_train", data=json.dumps({'config_path': '', 'task_id': 'job_1', "user_dir": "./"}))
-# 启用tensorboard：requests.post("http://127.0.0.1:9000/NLPServer/tensorboard", data=json.dumps({'port': '6006', "user_dir": "./"}))
+# 停止train：requests.post("http://127.0.0.1:9000/NLPServer/stop_train", data=json.dumps({'config_path': '', 'task_id': 'job_1', "user_dir": "./output"}))
+# 启用tensorboard：requests.post("http://127.0.0.1:9000/NLPServer/tensorboard", data=json.dumps({'port': '6006', "user_dir": "./output"}))
