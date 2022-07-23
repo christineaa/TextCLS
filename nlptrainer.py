@@ -550,7 +550,7 @@ if __name__ == "__main__":
         else:
             eval(args.function)(args.config_file)
     except Exception as e:
-        requests.post("http://127.0.0.1:8088/train", data={'task_id': item.task_id, 'status': repr(e)})
+        requests.post("http://127.0.0.1:8088/train", data={'task_id': args.task_id, 'status': repr(e)})
     else:
         requests.post("http://127.0.0.1:8088/train", data={'task_id': args.task_id, 'status': 'finish'})
     # bert_train("config/args.json")
