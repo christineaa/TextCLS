@@ -548,6 +548,6 @@ if __name__ == "__main__":
         time.sleep(120)
     else:
         eval(args.function)(args.config_file)
-    requests.post("http://127.0.0.1:8088/train", data=json.dumps({'task_id': args.task_id, 'status': 'finish'}))
+    requests.post("http://127.0.0.1:8088/train", data={'task_id': args.task_id, 'status': 'finish'})
     # bert_train("config/args.json")
     # bert_predict("config/eval_args.json")

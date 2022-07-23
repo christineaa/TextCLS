@@ -49,7 +49,7 @@ class NLPServer:
             # bert_train(item.config_path)
             print("success")
         except Exception as e:
-            requests.post("http://127.0.0.1:8088/train", data=json.dumps({'task_id': item.task_id, 'status': repr(e)}))
+            requests.post("http://127.0.0.1:8088/train", data={'task_id': item.task_id, 'status': repr(e)})
         return "success"
 
     @app.post("/stop_train")
@@ -66,7 +66,7 @@ class NLPServer:
             os.system(cmd)
             # bert_predict_interface(item.config_path, is_infer=True)
         except Exception as e:
-            requests.post("http://127.0.0.1:8088/train", data=json.dumps({'task_id': item.task_id, 'status': repr(e)}))
+            requests.post("http://127.0.0.1:8088/train", data={'task_id': item.task_id, 'status': repr(e)})
         return "success"
 
     @app.post("/stop_predict")
@@ -84,7 +84,7 @@ class NLPServer:
             # bert_predict_interface(item.config_path, is_infer=False)
             print("success")
         except Exception as e:
-            requests.post("http://127.0.0.1:8088/train", data=json.dumps({'task_id': item.task_id, 'status': repr(e)}))
+            requests.post("http://127.0.0.1:8088/train", data={'task_id': item.task_id, 'status': repr(e)})
         return "success"
 
     @app.post("/stop_evaluation")
