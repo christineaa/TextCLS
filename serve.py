@@ -21,10 +21,12 @@ class TensorboardItem(BaseModel):
     user_dir: str
 
 
-ray.init()
+os.environ["RAY_LOG_TO_STDERR"] = "1"
+ray.init(address="auto")
 serve.start(http_options=dict(
     host="127.0.0.1",
     port=9000,
+
     # root_path="/root"
 ))
 
@@ -42,6 +44,7 @@ class NLPServer:
 
     @app.post("/train")
     def setup(self, item: Item):
+        print("train api", item.config_path, item.user_dir, item.task_id)
         os.makedirs(item.user_dir, exist_ok=True)
         cmd = f"python nlptrainer.py --config_file={item.config_path} --function=bert_train --task_id={item.task_id}" \
               f"& echo $! > {item.user_dir}/train.pid"
@@ -57,6 +60,7 @@ class NLPServer:
 
     @app.post("/predict")
     def setup(self, item: Item):
+        print("predict api", item.config_path, item.user_dir, item.task_id)
         os.makedirs(item.user_dir, exist_ok=True)
         cmd = f"python nlptrainer.py --config_file={item.config_path} --function=bert_predict --task_id={item.task_id}" \
               f"& echo $! > {item.user_dir}/predict.pid"
@@ -72,6 +76,7 @@ class NLPServer:
 
     @app.post("/evaluate")
     def setup(self, item: Item):
+        print("evaluate api", item.config_path, item.user_dir, item.task_id)
         os.makedirs(item.user_dir, exist_ok=True)
         cmd = f"nohup python nlptrainer.py --config_file={item.config_path} --function=bert_eval --task_id={item.task_id}" \
               f"& echo $! > {item.user_dir}/evaluation.pid"
@@ -109,6 +114,6 @@ NLPServer.deploy()
 while True:
     time.sleep(5)
     # print(serve.list_deployments())
-# 调用train：requests.post("http://127.0.0.1:9000/NLPServer/train", data=json.dumps({'config_path': 'config/args.json', 'task_id': 'job_1', "user_dir": "./"}))
+# 调用train：requests.post("http://127.0.0.1:9000/NLPServer/train", data=json.dumps({'config_path': 'config/args.json', 'task_id': '22072667663971', "user_dir": "./"}))
 # 停止train：requests.post("http://127.0.0.1:9000/NLPServer/stop_train", data=json.dumps({'config_path': '', 'task_id': 'job_1', "user_dir": "./output"}))
 # 启用tensorboard：requests.post("http://127.0.0.1:9000/NLPServer/tensorboard", data=json.dumps({'port': '6006', "user_dir": "./output"}))
