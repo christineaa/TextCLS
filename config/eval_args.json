@@ -6,7 +6,7 @@
     "cls_type": "fc",
     "pooler_type": "cls",
     "activation": "gelu",
-    "test_file": "data/test.csv",
+    "test_file": "data/valid.csv",
     "src_column1": "content",
     "max_seq_length": 256,
     "pad_to_max_length": false,

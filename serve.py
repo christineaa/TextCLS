@@ -42,6 +42,7 @@ class NLPServer:
 
     @app.post("/train")
     def setup(self, item: Item):
+        os.makedirs(item.user_dir, exist_ok=True)
         cmd = f"python nlptrainer.py --config_file={item.config_path} --function=bert_train --task_id={item.task_id}" \
               f"& echo $! > {item.user_dir}/train.pid"
         os.system(cmd)
@@ -56,6 +57,7 @@ class NLPServer:
 
     @app.post("/predict")
     def setup(self, item: Item):
+        os.makedirs(item.user_dir, exist_ok=True)
         cmd = f"python nlptrainer.py --config_file={item.config_path} --function=bert_predict --task_id={item.task_id}" \
               f"& echo $! > {item.user_dir}/predict.pid"
         os.system(cmd)
@@ -70,6 +72,7 @@ class NLPServer:
 
     @app.post("/evaluate")
     def setup(self, item: Item):
+        os.makedirs(item.user_dir, exist_ok=True)
         cmd = f"nohup python nlptrainer.py --config_file={item.config_path} --function=bert_eval --task_id={item.task_id}" \
               f"& echo $! > {item.user_dir}/evaluation.pid"
         os.system(cmd)
@@ -84,7 +87,10 @@ class NLPServer:
 
     @app.post("/tensorboard")
     def setup(self, item: TensorboardItem):
-        cmd = f"nohup tensorboard --logdir={item.user_dir}/tensorboard --port={item.port} --host=0.0.0.0 " \
+        dir = os.path.join(item.user_dir, "tensorboard")
+        if not os.path.exists(dir):
+            dir = "/root/TextCLS/output/tensorboard"
+        cmd = f"nohup tensorboard --logdir={dir} --port={item.port} --host=0.0.0.0 " \
               f"> {item.user_dir}/tensorboard.out 2>&1 & echo $! > {item.user_dir}/tensorboard.pid"
         os.system(cmd)
         time.sleep(600)

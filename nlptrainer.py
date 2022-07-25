@@ -537,7 +537,7 @@ def evaluate(model, data_iter, device, is_infer=False):
     report = classification_report(labels_all,
                                    predict_idx,
                                    target_names=model.config.id2label.values(),
-                                   digits=4)
+                                   output_dict=True)
     confusion = confusion_matrix(labels_all, predict_idx)
     return acc, micro_result, macro_result, loss_total / len(data_iter), report, confusion
 
